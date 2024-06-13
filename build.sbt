@@ -11,11 +11,11 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0
 
 libraryDependencies ++= Seq(
   guice,
-  "org.playframework" %% "play-slick"            % "6.1.0",
+  "org.playframework" %% "play-slick" % "6.1.0",
   "org.playframework" %% "play-slick-evolutions" % "6.1.0",
   "mysql" % "mysql-connector-java" % "8.0.26" // my-sql connector dependency
 )
 
 libraryDependencies += "com.typesafe.play" %% "filters-helpers" % "2.8.8"
-
+libraryDependencies += ws
 dependencyOverrides += "org.scala-lang.modules" %% "scala-xml" % "2.2.0"

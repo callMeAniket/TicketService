@@ -38,8 +38,8 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
     }.getOrElse(Future.successful(BadRequest("Invalid format")))
   }
 
-  def get(id: Int): Action[AnyContent] = Action.async {
-    ticketService.getTicketById(id).map {
+  def get(id: Int): Action[AnyContent] = Action.async { request =>
+    ticketService.getTicketById(id, request.headers.get("token").get).map {
       case Some(ticket) => Ok(Json.toJson(ticket))
       case None => NotFound
     }
@@ -52,9 +52,14 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
     }
   }
 
-  def getAll: Action[AnyContent] = Action.async {
-    ticketService.getAllTickets.map { tickets =>
-      Ok(Json.toJson(tickets))
+  def getAll: Action[AnyContent] = Action.async { request =>
+    request.headers.get("token") match {
+      case Some(token) =>
+        ticketService.getAllTickets(request.headers.get("token").get)
+          .map { tickets =>
+          Ok(Json.toJson(tickets))
+        }
+      case _ => Future.successful(BadRequest(""))
     }
   }
 }
