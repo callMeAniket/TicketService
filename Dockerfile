@@ -18,8 +18,8 @@ COPY --from=build /app/target/universal/stage /app
 # Set the working directory in the container
 WORKDIR /app
 
-# Make port 9000 available to the world outside this container
-EXPOSE 9002
+# Make port 9001 available to the world outside this container
+EXPOSE 9001
 
 # Define environment variable
 ENV PLAY_HTTP_SECRET=pndkmnrxewdssdduxpopfersdikfjdieihgymuzkhrrmhniypjweqzhjgscykjisuxcdldyiedwafechssnkzkuwzquzsmntsyhrehldaiiibxadbvhdhpjizfdtjpti
