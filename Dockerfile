@@ -25,4 +25,4 @@ EXPOSE 9001
 ENV PLAY_HTTP_SECRET=pndkmnrxewdssdduxpopfersdikfjdieihgymuzkhrrmhniypjweqzhjgscykjisuxcdldyiedwafechssnkzkuwzquzsmntsyhrehldaiiibxadbvhdhpjizfdtjpti
 
 # Run the binary script when the container launches
-CMD ./bin/userservice -Dplay.http.secret.key=$PLAY_HTTP_SECRET
+CMD ./bin/ticketservice -Dplay.http.secret.key=$PLAY_HTTP_SECRET

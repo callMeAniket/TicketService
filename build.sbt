@@ -1,4 +1,4 @@
-name := """TicketService"""
+name := """ticketservice"""
 
 version := "1.0-SNAPSHOT"
 
