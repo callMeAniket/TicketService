@@ -1,11 +1,12 @@
 package controllers
 
-import javax.inject._
-import play.api.mvc._
-import play.api.libs.json._
-import scala.concurrent.{ExecutionContext, Future}
-import service.TicketService
 import model.Ticket
+import play.api.libs.json._
+import play.api.mvc._
+import service.TicketService
+
+import javax.inject._
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TicketController @Inject()(cc: ControllerComponents, ticketService: TicketService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
@@ -27,15 +28,32 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
 
   def updateStatus(id: Int): Action[JsValue] = Action.async(parse.json) { request =>
     (request.body \ "status").asOpt[String].map { status =>
-      if (validStatuses.contains(status)) {
-        ticketService.updateTicketStatus(id, status).map {
-          case 0 => NotFound
+      if (validStatuses.contains(status.toUpperCase)) {
+        ticketService.updateTicketStatus(id, status.toUpperCase()).map {
+          case None => NotFound
           case _ => Ok
         }
       } else {
         Future.successful(BadRequest("Invalid Status"))
       }
     }.getOrElse(Future.successful(BadRequest("Invalid format")))
+  }
+
+  def assignTicket(id: Int): Action[JsValue] = Action.async(parse.json) { request =>
+    request.headers.get("token") match {
+      case Some(token) =>
+        (request.body \ "assignTo").asOpt[Int].map { assignTo =>
+          if (assignTo != 0) {
+            ticketService.assignTicket(id, Some(assignTo), token).map {
+              case None => NotFound
+              case _ => Ok
+            }
+          } else {
+            Future.successful(BadRequest("Assigned To is required"))
+          }
+        }.getOrElse(Future.successful(BadRequest("Invalid format")))
+      case _ => Future.successful(BadRequest("Admin Token Required"))
+    }
   }
 
   def get(id: Int): Action[AnyContent] = Action.async { request =>
@@ -55,10 +73,10 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
   def getAll: Action[AnyContent] = Action.async { request =>
     request.headers.get("token") match {
       case Some(token) =>
-        ticketService.getAllTickets(request.headers.get("token").get)
+        ticketService.getAllTickets(token)
           .map { tickets =>
-          Ok(Json.toJson(tickets))
-        }
+            Ok(Json.toJson(tickets))
+          }
       case _ => Future.successful(BadRequest(""))
     }
   }

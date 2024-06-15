@@ -32,4 +32,6 @@ class TicketDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider
   def updateStatus(id: Int, status: String): Future[Int] = db.run(tickets.filter(_.id === id).map(_.status).update(status))
 
   def delete(id: Int): Future[Int] = db.run(tickets.filter(_.id === id).delete)
+
+  def assignTicket(id: Int, assignTo: Option[Int]): Future[Int] = db.run(tickets.filter(_.id ===id).map(_.assignedTo).update(assignTo))
 }
