@@ -19,11 +19,11 @@ class UserService @Inject()(implicit ec: ExecutionContext, ws: WSClient){
 
            println("successful")
             Future.successful(response.json.as[User])
-          case _ =>
+          case ex =>
             println(response)
             println(response.status)
             println("API called failed")
-            Future.failed(new Exception("API called failed"))
+            Future.failed(new Exception("API called failed " + ex))
         }
       }
   }
