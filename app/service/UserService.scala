@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UserService @Inject()(implicit ec: ExecutionContext, ws: WSClient){
   def getUserByToken(token: String): Future[User] = {
-    ws.url("http://34.45.117.144:9000/usersByToken")
+    ws.url("http://34.170.165.7:9000/usersByToken")
       .addHttpHeaders("Content-Type" -> "application/json")
       .addHttpHeaders("token" -> token)
       .get()
