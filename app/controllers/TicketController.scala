@@ -80,4 +80,14 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
       case _ => Future.successful(BadRequest(""))
     }
   }
+  def getAllFromElastic: Action[AnyContent] = Action.async { request =>
+    request.headers.get("token") match {
+      case Some(token) =>
+        ticketService.getAllTicketsFromElastic(token)
+          .map { tickets =>
+            Ok(Json.toJson(tickets))
+          }
+      case _ => Future.successful(BadRequest(""))
+    }
+  }
 }

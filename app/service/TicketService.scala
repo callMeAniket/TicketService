@@ -8,7 +8,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, kafkaProducerService: KafkaProducerService)(implicit ec: ExecutionContext) {
+class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, kafkaProducerService: KafkaProducerService, elasticSearchService: ElasticSearchService)(implicit ec: ExecutionContext) {
 
 
   def getAllTickets(token: String): Future[Seq[Ticket]] = {
@@ -83,5 +83,9 @@ class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, ka
     } else {
       Future.failed(new Exception("Not updated"))
     }
+  }
+
+  def getAllTicketsFromElastic(token: String): Future[List[Ticket]] = {
+    elasticSearchService.getFromElastic()
   }
 }

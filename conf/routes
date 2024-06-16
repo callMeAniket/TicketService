@@ -14,3 +14,4 @@ PUT     /tickets/:id/status controllers.TicketController.updateStatus(id: Int)
 GET     /tickets/:id        controllers.TicketController.get(id: Int)
 DELETE  /tickets/:id        controllers.TicketController.delete(id: Int)
 GET     /tickets            controllers.TicketController.getAll
+GET     /ticketsFromElastic            controllers.TicketController.getAllFromElastic
