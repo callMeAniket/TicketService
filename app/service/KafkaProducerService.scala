@@ -18,14 +18,13 @@ class KafkaProducerService @Inject()(){
 
   // Initialize Kafka producer
   private val kafkaProducer = new KafkaProducer[String, String](props)
-
+  private val topic = kafkaConfig.getString("topic")
   // Method to send a message to Kafka
-  def sendMessage(topic: String, message: String): Unit = {
+  def sendMessage(message: String): Unit = {
     val record = new ProducerRecord[String, String](topic, message)
     kafkaProducer.send(record)
     println("success to kafka")
   }
-
   // Method to close the Kafka producer
   def close(): Unit = {
     kafkaProducer.close()

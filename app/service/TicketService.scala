@@ -34,7 +34,7 @@ class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, ka
       .flatMap(id => ticketDAO.getById(id, None)
       .flatMap{ ticketRes =>
         val ticketJson = Json.toJson(ticketRes).toString()
-        kafkaProducerService.sendMessage("checkTopic", ticketJson)
+        kafkaProducerService.sendMessage(ticketJson)
         Future.successful(ticketRes)
       })
   }
