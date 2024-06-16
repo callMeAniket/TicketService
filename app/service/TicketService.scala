@@ -2,6 +2,7 @@ package service
 
 import daos.TicketDAO
 import model.Ticket
+import play.api.libs.json.Json
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +33,8 @@ class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, ka
     ticketDAO.insert(ticket)
       .flatMap(id => ticketDAO.getById(id, None)
       .flatMap{ ticketRes =>
-        kafkaProducerService.sendMessage("checkTopic", ticketRes.toString)
+        val ticketJson = Json.toJson(ticketRes).toString()
+        kafkaProducerService.sendMessage("checkTopic", ticketJson)
         Future.successful(ticketRes)
       })
   }
