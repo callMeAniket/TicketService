@@ -17,8 +17,8 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
   def create: Action[JsValue] = Action.async(parse.json) { request =>
     request.body.validate[Ticket].map { ticket =>
       if (validDepartments.contains(ticket.department) && validStatuses.contains(ticket.status)) {
-        ticketService.createTicket(ticket).map { id =>
-          Created(Json.obj("id" -> id))
+        ticketService.createTicket(ticket).map { ticket =>
+          Created(Json.toJson(ticket))
         }
       } else {
         Future.successful(BadRequest("Invalid Department or Status"))
@@ -29,7 +29,7 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
   def updateStatus(id: Int): Action[JsValue] = Action.async(parse.json) { request =>
     (request.body \ "status").asOpt[String].map { status =>
       if (validStatuses.contains(status.toUpperCase)) {
-        ticketService.updateTicketStatus(id, status.toUpperCase()).map {
+        ticketService.updateTicketStatus(id, status.toUpperCase(), request.headers.get("token").get).map {
           case None => NotFound
           case _ => Ok
         }
@@ -64,9 +64,11 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
   }
 
   def delete(id: Int): Action[AnyContent] = Action.async {
-    ticketService.deleteTicket(id).map {
-      case 0 => NotFound
-      case _ => Ok(Json.toJson("Deleted successfully"))
+    request => {
+      ticketService.deleteTicket(id, request.headers.get("token")).map {
+        case 0 => NotFound
+        case _ => Ok(Json.toJson("Deleted successfully"))
+      }
     }
   }
 
