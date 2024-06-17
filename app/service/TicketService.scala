@@ -132,7 +132,7 @@ class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, ka
         user =>
           if (user.role.toLowerCase != "admin") {
             elasticSearchService.getFromElastic().map { tickets =>
-              tickets.filter(ticket => ticket.assignedTo == user.id)
+              tickets.filter(ticket => ticket.assignedTo.get == user.id.get)
             }
           } else {
             elasticSearchService.getFromElastic()

@@ -57,18 +57,23 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
   }
 
   def get(id: Int): Action[AnyContent] = Action.async { request =>
-    ticketService.getTicketById(id, request.headers.get("token").get).map {
-      case Some(ticket) => Ok(Json.toJson(ticket))
-      case None => NotFound
+    request.headers.get("token") match {
+      case Some(token) => ticketService.getTicketById(id, token).map {
+        case Some(ticket) => Ok(Json.toJson(ticket))
+        case None => NotFound
+      }
+      case _ => Future.successful(BadRequest("Token Required"))
     }
   }
 
-  def delete(id: Int): Action[AnyContent] = Action.async {
-    request => {
-      ticketService.deleteTicket(id, request.headers.get("token").get).map {
-        case 0 => NotFound
-        case _ => Ok(Json.toJson("Deleted successfully"))
-      }
+  def delete(id: Int): Action[AnyContent] = Action.async { request =>
+    request.headers.get("token") match {
+      case Some(token) =>
+        ticketService.deleteTicket(id, token).map {
+          case 0 => NotFound
+          case _ => Ok(Json.toJson("Deleted successfully"))
+        }
+      case _ => Future.successful(BadRequest("Token Required"))
     }
   }
 
@@ -79,9 +84,10 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
           .map { tickets =>
             Ok(Json.toJson(tickets))
           }
-      case _ => Future.successful(BadRequest(""))
+      case _ => Future.successful(BadRequest("Token Required"))
     }
   }
+
   def getAllFromElastic: Action[AnyContent] = Action.async { request =>
     request.headers.get("token") match {
       case Some(token) =>
@@ -89,7 +95,7 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
           .map { tickets =>
             Ok(Json.toJson(tickets))
           }
-      case _ => Future.successful(BadRequest(""))
+      case _ => Future.successful(BadRequest("Token Required"))
     }
   }
 }
