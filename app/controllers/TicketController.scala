@@ -65,7 +65,7 @@ class TicketController @Inject()(cc: ControllerComponents, ticketService: Ticket
 
   def delete(id: Int): Action[AnyContent] = Action.async {
     request => {
-      ticketService.deleteTicket(id, request.headers.get("token")).map {
+      ticketService.deleteTicket(id, request.headers.get("token").get).map {
         case 0 => NotFound
         case _ => Ok(Json.toJson("Deleted successfully"))
       }
