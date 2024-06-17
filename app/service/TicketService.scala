@@ -70,7 +70,12 @@ class TicketService @Inject()(ticketDAO: TicketDAO, userService: UserService, ka
           .flatMap {
             user =>
               if (user.role.toLowerCase != "admin") {
-                Future.failed(new Exception("Only admin can delete tickets"))
+                if (t.assignedTo == user.id) {
+                  ticketDAO.updateStatus(id, status)
+                    .flatMap(count => getTicketAfterUpdate(id, count))
+                } else {
+                  Future.failed(new Exception("Only assigned can update tickets"))
+                }
               } else {
                 ticketDAO.updateStatus(id, status)
                   .flatMap(count => getTicketAfterUpdate(id, count))
